@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.17.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: wildfly
+  name: wildfly
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: wildfly
+    spec:
+      containers:
+      - image: wildfly
+        name: wildfly
+        ports:
+        - containerPort: 8080
+        - containerPort: 9990
+        - containerPort: 8009
+        resources: {}
+      restartPolicy: Always
+status: {}
