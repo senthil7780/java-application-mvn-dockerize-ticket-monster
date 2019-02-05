@@ -6,6 +6,7 @@ RUN yum update -y
 RUN yum install git -y 
 RUN yum install maven -y
 RUN yum install dos2unix -y
+
 WORKDIR /app/
 RUN git clone https://github.com/jboss-developer/ticket-monster.git
 WORKDIR /app/ticket-monster/demo/
@@ -25,7 +26,6 @@ EXPOSE 8080 9990 8009
 # Set the default command to run on boot
 # This will boot WildFly in the standalone mode and bind to external interface
 CMD /opt/jboss/wildfly/bin/standalone.sh -b `hostname -i` -bmanagement `hostname -i` 
-
 
 
 

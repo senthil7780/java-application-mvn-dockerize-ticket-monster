@@ -1,12 +1,68 @@
 version: "3.3"
-networks:
-  mynet:
 services:
   wildfly:
     build: .
     ports: 
-      - "127.0.0.1:8080:8080"
-      - "127.0.0.1:9990:9990"
-      - "127.0.0.1:8009:8009"
-    networks:
-      - mynet
+      - "8080:8080"
+      - "9990:9990"
+      - "8009:8009"
+    depends_on:
+      - elasticsearch
+      - filebeat
+      - kibana
+    links:
+      - elasticsearch
+      - filebeat
+      - kibana
+    networks: ['stack']
+
+  elasticsearch:
+    container_name: elasticsearch
+    hostname: elasticsearch
+    image: "docker.elastic.co/elasticsearch/elasticsearch:6.6.0"
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+    ports: ['9200:9200']
+    healthcheck:
+      test: ["CMD", "curl","-s" ,"-f", "-u", "http://localhost:9200/_cat/health"]
+    #Internal network for the containers
+    networks: ['stack']
+
+  #Kibana container
+  kibana:
+    container_name: kibana
+    hostname: kibana
+    image: "docker.elastic.co/kibana/kibana:6.6.0"
+    ports: ['5601:5601']
+    networks: ['stack']
+    depends_on: ['elasticsearch']
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-f", "http://localhost:5601/login"]
+      retries: 6
+
+  #Filebeat container
+  filebeat:
+    container_name: filebeat
+    hostname: filebeat
+    user: root
+    image: "docker.elastic.co/beats/filebeat:6.6.0"
+    volumes:
+      #Mount the filebeat configuration so users can make edit
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+    networks: ['stack']
+    command: filebeat -strict.perms=false
+    restart: on-failure
+    depends_on:
+      #wait for the these services to come up. This ensures the logs are available and ES exists for indexing
+      - elasticsearch
+
+volumes:
+  #Es data
+  esdata:
+    driver: local
+  #Filebeat data i.e. registry file
+  fbdata:
+    driver: local
+networks: {stack: {}}

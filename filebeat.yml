@@ -1,0 +1,7 @@
+filebeat.registry_file: /usr/share/filebeat/data/registry
+filebeat.inputs:
+- type: log
+  paths:
+    - /opt/jboss/wildfly/standalone/log/server.log
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
