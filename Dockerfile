@@ -9,7 +9,7 @@ RUN yum install dos2unix -y
 WORKDIR /app/
 RUN git clone https://github.com/jboss-developer/ticket-monster.git
 WORKDIR /app/ticket-monster/demo/
-RUN mvn install -Ppostgresql
+RUN mvn install
 RUN cp /app/ticket-monster/demo/target/ticket-monster.war /opt/jboss/wildfly/standalone/deployments/
 
 RUN /opt/jboss/wildfly/bin/add-user.sh admin Admin#70365 --silent
