@@ -2,16 +2,6 @@ version: "3.3"
 networks:
   mynet:
 services:
-  db:
-    container_name: "db"
-    image: postgres
-    networks:
-      - mynet
-    ports:
-       - "5432:5432"
-    environment:
-      - POSTGRES_USER=ticketmonster
-      - POSTGRES_PASSWORD=ticketmonster-docker
   wildfly:
     build: .
     ports: 
